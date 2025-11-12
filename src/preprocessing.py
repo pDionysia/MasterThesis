@@ -60,8 +60,8 @@ for folder in subfolders:
         plt.tight_layout()
         plt.show()
 
-'''
 
+'''
 # I Choose my chemical folder
 folder = "data/first_experimental_data/15_10_2025"
 
@@ -113,6 +113,59 @@ for conc in target_concs:
         plt.plot(time, mean_signal, linewidth=1.2, color=colors[conc], label=conc)
 
 plt.title("Chemical Measurements on Si — Increasing Concentrations for Metalaxyl")
+plt.xlabel("Time (ps)")
+plt.ylabel("Signal (nA)")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+
+
+# Comparison between different chemicals
+
+root = "data/first_experimental_data"
+
+# Chemicals and their folders
+folders = {
+    "Ethanol":       "15_10_2025",  
+    "Metalaxyl":     "15_10_2025",
+    "Acetamiprid":   "17_10_2025",
+    "Abamectin":     "21_10_2025"
+}
+
+# Pick one concentration per chemical for the comparison
+representative = {
+    "Ethanol": "ethanol",
+    "Metalaxyl": "1000ppb",
+    "Acetamiprid": "1000ppb",
+    "Abamectin": "1000ppb"
+}
+
+plt.figure(figsize=(10, 5))
+
+for chem, subfolder in folders.items():
+    folder = os.path.join(root, subfolder)
+    keyword = representative[chem]
+
+    files = [f for f in os.listdir(folder) if keyword in f and f.endswith(".csv")]
+
+    signals = []
+
+    for file in sorted(files):
+        path = os.path.join(folder, file)
+        data = pd.read_csv(path)
+        data.columns = [c.strip() for c in data.columns]
+
+        time = data["Time_abs/ps"]
+        signals.append(data["Signal/nA"])
+
+    # Mean waveform for the chemical
+    if signals:
+        mean_signal = pd.concat(signals, axis=1).mean(axis=1)
+        plt.plot(time, mean_signal, linewidth=2, label=f"{chem} ({keyword})")
+
+plt.title("Comparison Between Chemicals")
 plt.xlabel("Time (ps)")
 plt.ylabel("Signal (nA)")
 plt.legend()
