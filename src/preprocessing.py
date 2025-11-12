@@ -99,7 +99,7 @@ for file in sorted(files):
     time = data.iloc[:, 0]
     signal = data.iloc[:, 1]
     
-    plt.plot(time, signal, alpha=0.6, label=file.replace('.csv', ''))
+    plt.plot(time, signal, alpha=0.6, linewidth=0.3, label=file.replace('.csv', ''))
 
 plt.title("THz Time Domain Signals (Si wafer clear SRRs)")
 plt.xlabel("Time (ps)")
@@ -130,7 +130,7 @@ for file in sorted(files2):
     time = data2.iloc[:, 0]
     signal = data2.iloc[:, 1]
     
-    plt.plot(time, signal, alpha=0.6, label=file.replace('.csv', ''))
+    plt.plot(time, signal, alpha=0.6, linewidth=0.3, label=file.replace('.csv', ''))
 
 plt.title("THz Time Domain Signals (Si wafer with Ethanol)")
 plt.xlabel("Time (ps)")
