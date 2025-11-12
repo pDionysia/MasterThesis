@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 import re
-
+'''
 # Experimental data part 1
 # Root path to my data
 root_folder = "data/first_experimental_data"
@@ -60,7 +60,65 @@ for folder in subfolders:
         plt.tight_layout()
         plt.show()
 
+'''
 
+# I Choose my chemical folder
+folder = "data/first_experimental_data/15_10_2025"
+
+plt.figure(figsize=(12, 6))
+
+# Concentrations for Slide 7
+target_concs = [
+    "ethanol",
+    "10ppb",
+    "100ppb",
+    "1000ppb",
+    "10000ppb",
+    "100000ppb"
+]
+
+# Assign one strong color per concentration
+colors = {
+    "ethanol":     "blue",
+    "10ppb":       "green",
+    "100ppb":      "red",
+    "1000ppb":     "purple",
+    "10000ppb":    "orange",
+    "100000ppb":   "black"
+}
+
+for conc in target_concs:
+    files = [f for f in os.listdir(folder) if conc in f and f.endswith(".csv")]
+
+    signals = []
+
+    for file in sorted(files):
+        path = os.path.join(folder, file)
+        data = pd.read_csv(path)
+
+        # Clean column names
+        data.columns = [c.strip() for c in data.columns]
+
+        time = data["Time_abs/ps"]
+        signal = data["Signal/nA"]
+
+        # SUPER THIN raw lines in strong color
+        plt.plot(time, signal, linewidth=0.2, color=colors[conc])
+
+        signals.append(signal)
+
+    # Mean line (strong color, slightly thicker)
+    if signals:
+        mean_signal = pd.concat(signals, axis=1).mean(axis=1)
+        plt.plot(time, mean_signal, linewidth=1.2, color=colors[conc], label=conc)
+
+plt.title("Chemical Measurements on Si — Increasing Concentrations for Metalaxyl")
+plt.xlabel("Time (ps)")
+plt.ylabel("Signal (nA)")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
 
 
 # Experimental data part 2
