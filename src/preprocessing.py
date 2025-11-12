@@ -1,7 +1,69 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+import re
 
+# Experimental data part 1
+# Root path to my data
+root_folder = "data/first_experimental_data"
+
+# Get all subfolders (15_10_2025, 17_10_2025, 21_10_2025)
+subfolders = [
+    os.path.join(root_folder, f)
+    for f in os.listdir(root_folder)
+    if os.path.isdir(os.path.join(root_folder, f))
+]
+
+for folder in subfolders:
+    substance_name = os.path.basename(folder)
+    print(f"\n📁 Processing folder: {substance_name}")
+
+    csv_files = [f for f in os.listdir(folder) if f.endswith(".csv")]
+    groups = {}
+    for file in csv_files:
+        match = re.search(r"(reference|ethanol|[A-Za-z]+_\d+ppb)", file)
+        key = match.group(1) if match else "unknown"
+        groups.setdefault(key, []).append(file)
+
+    for conc, files in groups.items():
+        plt.figure(figsize=(10, 5))
+
+        for file in sorted(files):
+            path = os.path.join(folder, file)
+
+            try:
+                data = pd.read_csv(path)
+                # Clean up column names
+                data.columns = [c.strip() for c in data.columns]
+
+                # Check available columns
+                if "Time_abs/ps" not in data.columns or "Signal/nA" not in data.columns:
+                    print(f"⚠️ Skipping {file} — columns found: {data.columns.tolist()}")
+                    continue
+
+                plt.plot(
+                    data["Time_abs/ps"],
+                    data["Signal/nA"],
+                    linewidth=0.6,
+                    alpha=0.7,
+                    label=file.replace(".csv", "")
+                )
+
+            except Exception as e:
+                print(f"Error reading {file}: {e}")
+
+        plt.title(f"{substance_name} – {conc}")
+        plt.xlabel("Time (ps)")
+        plt.ylabel("Signal (nA)")
+        plt.legend(fontsize=7, ncol=2)
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
+
+
+
+
+# Experimental data part 2
 # Path to one measurement file
 file_path = "data/Si_wafer_clear_SRRs/x_direction_sample_1_1.csv"
 
