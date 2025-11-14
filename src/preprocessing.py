@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 import re
-'''
+
 # Experimental data part 1
 # Root path to my data
 root_folder = "data/first_experimental_data"
@@ -16,7 +16,7 @@ subfolders = [
 
 for folder in subfolders:
     substance_name = os.path.basename(folder)
-    print(f"\n📁 Processing folder: {substance_name}")
+    print(f"Processing folder: {substance_name}")
 
     csv_files = [f for f in os.listdir(folder) if f.endswith(".csv")]
     groups = {}
@@ -38,7 +38,7 @@ for folder in subfolders:
 
                 # Check available columns
                 if "Time_abs/ps" not in data.columns or "Signal/nA" not in data.columns:
-                    print(f"⚠️ Skipping {file} — columns found: {data.columns.tolist()}")
+                    print(f"Skipping {file} — columns found: {data.columns.tolist()}")
                     continue
 
                 plt.plot(
@@ -61,7 +61,7 @@ for folder in subfolders:
         plt.show()
 
 
-'''
+# plot Metalaxyl for each concentration
 # I Choose my chemical folder
 folder = "data/first_experimental_data/15_10_2025"
 
