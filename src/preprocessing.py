@@ -1,8 +1,9 @@
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
 import re
-
+'''
 # Experimental data part 1
 # Root path to my data
 root_folder = "data/first_experimental_data"
@@ -173,7 +174,7 @@ plt.grid(True)
 plt.tight_layout()
 plt.show()
 
-
+'''
 # Experimental data part 2
 # Path to one measurement file
 file_path = "data/Si_wafer_clear_SRRs/x_direction_sample_1_1.csv"
@@ -251,3 +252,205 @@ plt.grid(True)
 plt.tight_layout()
 plt.show()
 
+
+# TIME DOMAIN AND FFT PLOTS
+# Time-Domain and FFT for Clear vs Ethanol
+folder_clear = "data/Si_wafer_clear_SRRs"
+folder_ethanol = "data/Si_wafer_with_ethanol"
+
+
+# Function to load all CSV files from a folder
+def load_signals(folder):
+    files = [f for f in os.listdir(folder) if f.endswith(".csv")]
+    times = None
+    signals = []
+
+    for file in sorted(files):
+        df = pd.read_csv(os.path.join(folder, file))
+        df.columns = [c.strip() for c in df.columns]
+
+        if times is None:
+            times = df["Time_abs/ps"].values
+
+        signals.append(df["Signal/nA"].values)
+
+    signals = np.array(signals)
+    mean_signal = np.mean(signals, axis=0)
+
+    return times, signals, mean_signal
+
+
+# Function to compute the FFT (frequency domain)
+def compute_fft(time_ps, signal):
+    # Convert picoseconds → seconds
+    time_s = time_ps * 1e-12
+
+    dt = time_s[1] - time_s[0]      # sampling step
+    N = len(time_s)
+
+    fft_values = np.fft.fft(signal)
+    freqs = np.fft.fftfreq(N, dt)
+
+    # Keep only positive frequencies
+    mask = freqs >= 0
+    freqs = freqs[mask]
+    fft_mag = np.abs(fft_values[mask])
+
+    return freqs / 1e12, fft_mag     # THz
+
+
+# Load datasets
+t_clear, _, mean_clear = load_signals(folder_clear)
+t_eth, _, mean_eth = load_signals(folder_ethanol)
+
+# Compute FFTs
+freq_clear, fft_clear = compute_fft(t_clear, mean_clear)
+freq_eth, fft_eth = compute_fft(t_eth, mean_eth)
+
+
+
+# PLOTS
+# TIME DOMAIN — CLEAR SRRs
+plt.figure(figsize=(12, 5))
+plt.plot(t_clear, mean_clear, color="black")
+plt.title("SRRs — Clear Silicon Wafer (Time Domain)")
+plt.xlabel("Time (ps)")
+plt.ylabel("Signal (nA)")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+
+# FREQUENCY DOMAIN — CLEAR SRRs
+plt.figure(figsize=(12, 5))
+plt.plot(freq_clear, fft_clear, color="black")
+plt.title("SRRs — Clear Silicon Wafer (Frequency Domain, FFT)")
+plt.xlabel("Frequency (THz)")
+plt.ylabel("Magnitude (a.u.)")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+
+# TIME DOMAIN — SRRs with ETHANOL
+plt.figure(figsize=(12, 5))
+plt.plot(t_eth, mean_eth, color="blue")
+plt.title("SRRs with Ethanol — Time Domain")
+plt.xlabel("Time (ps)")
+plt.ylabel("Signal (nA)")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+
+# FREQUENCY DOMAIN — SRRs with ETHANOL
+plt.figure(figsize=(12, 5))
+plt.plot(freq_eth, fft_eth, color="blue")
+plt.title("SRRs with Ethanol — Frequency Domain (FFT)")
+plt.xlabel("Frequency (THz)")
+plt.ylabel("Magnitude (a.u.)")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+
+# Time-Domain and FFT Comparison for SRRs with 10ppb and 100ppb of Acetamiprid
+folder_10ppb = "data/SRRs_with_10ppb_Acetamiprid"
+folder_100ppb = "data/SRRs_with_100ppb_Acetamiprid"
+
+
+
+# Function to load all CSVs
+def load_signals(folder):
+    files = [f for f in os.listdir(folder) if f.endswith(".csv")]
+    times = None
+    signals = []
+
+    for file in sorted(files):
+        df = pd.read_csv(os.path.join(folder, file))
+        df.columns = [c.strip() for c in df.columns]
+
+        if times is None:
+            times = df["Time_abs/ps"].values
+
+        signals.append(df["Signal/nA"].values)
+
+    signals = np.array(signals)
+    mean_signal = np.mean(signals, axis=0)
+
+    return times, signals, mean_signal
+
+
+
+
+# Function to compute FFT
+def compute_fft(time_ps, signal):
+    # Convert picoseconds → seconds
+    time_s = time_ps * 1e-12
+
+    dt = time_s[1] - time_s[0]      # sampling step
+    N = len(time_s)                 # number of samples
+
+    # FFT
+    fft_values = np.fft.fft(signal)
+    freqs = np.fft.fftfreq(N, dt)
+
+    # Keep only positive frequencies
+    mask = freqs >= 0
+    freqs = freqs[mask]
+    fft_mag = np.abs(fft_values[mask])
+
+    return freqs / 1e12, fft_mag     # return THz units
+
+
+
+
+# Load both datasets
+t10, signals10, mean10 = load_signals(folder_10ppb)
+t100, signals100, mean100 = load_signals(folder_100ppb)
+
+# Compute FFTs
+freq10, fft10 = compute_fft(t10, mean10)
+freq100, fft100 = compute_fft(t100, mean100)
+
+
+
+# Plot: Time-domain + FFT for 10 ppb
+plt.figure(figsize=(12, 5))
+plt.plot(t10, mean10, color="blue")
+plt.title("SRRs with 10 ppb Acetamiprid — Time Domain")
+plt.xlabel("Time (ps)")
+plt.ylabel("Signal (nA)")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+plt.figure(figsize=(12, 5))
+plt.plot(freq10, fft10, color="blue")
+plt.title("SRRs with 10 ppb Acetamiprid — Frequency Domain (FFT)")
+plt.xlabel("Frequency (THz)")
+plt.ylabel("Magnitude (a.u.)")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+
+
+# Plot: Time-domain + FFT for 100 ppb
+plt.figure(figsize=(12, 5))
+plt.plot(t100, mean100, color="red")
+plt.title("SRRs with 100 ppb Acetamiprid — Time Domain")
+plt.xlabel("Time (ps)")
+plt.ylabel("Signal (nA)")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+plt.figure(figsize=(12, 5))
+plt.plot(freq100, fft100, color="red")
+plt.title("SRRs with 100 ppb Acetamiprid — Frequency Domain (FFT)")
+plt.xlabel("Frequency (THz)")
+plt.ylabel("Magnitude (a.u.)")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
