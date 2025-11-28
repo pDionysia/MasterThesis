@@ -30,3 +30,23 @@ X1000, y1000 = load_folder("data/SRRs_with_1000ppb_Acetamiprid", label=4)
 # Combine them
 X = np.array(X10 + X100 + X1000 + Xeth + Xclear, dtype=object)
 y = np.array(y10 + y100 + y1000 + yeth + yclear)
+
+# Define n_samples and series_length NOW
+n_samples = len(X)
+print("n_samples:", n_samples)
+
+series_length = max(ts.shape[1] for ts in X)
+print("series_length:", series_length)
+
+# ------------------------------
+# Pad to uniform length
+# ------------------------------
+
+X_padded = np.zeros((n_samples, 1, series_length))
+
+for i, ts in enumerate(X):
+    length = ts.shape[1]
+    X_padded[i, 0, :length] = ts  # fill into padded array
+
+print("X_padded shape:", X_padded.shape)
+print("y shape:", len(y))
