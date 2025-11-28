@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 import re
-'''
+
 # Experimental data part 1
 # Root path to my data
 root_folder = "data/first_experimental_data"
@@ -174,7 +174,7 @@ plt.grid(True)
 plt.tight_layout()
 plt.show()
 
-'''
+
 # Experimental data part 2
 # Path to one measurement file
 file_path = "data/Si_wafer_clear_SRRs/x_direction_sample_1_1.csv"
