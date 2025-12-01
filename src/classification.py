@@ -1,6 +1,10 @@
 import os
 import numpy as np
 import pandas as pd
+from sklearn.model_selection import train_test_split
+from aeon.classification.convolution_based import RocketClassifier
+from aeon.classification.deep_learning import HInceptionTimeClassifier
+
 
 def load_folder(folder_path, label):
     X_list = []
@@ -50,3 +54,31 @@ for i, ts in enumerate(X):
 
 print("X_padded shape:", X_padded.shape)
 print("y shape:", len(y))
+
+
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X_padded, y, test_size=0.2, random_state=42, stratify=y
+)
+
+# run the baseline classifier
+clf = RocketClassifier(n_kernels=10000)
+clf.fit(X_train, y_train)
+print("ROCKET Accuracy:", clf.score(X_test, y_test))
+
+# run H-Inception time
+# H-InceptionTime model
+clf = HInceptionTimeClassifier(
+    n_epochs=50,           # start small, increase to 150–300 for final runs
+    batch_size=32,
+    random_state=42,
+    use_residual=True,     # hybrid mode
+    verbose=True,
+)
+
+# Train
+clf.fit(X_train, y_train)
+
+# Evaluate
+acc = clf.score(X_test, y_test)
+print("H-InceptionTime Accuracy:", acc)
