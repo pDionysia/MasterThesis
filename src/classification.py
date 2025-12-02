@@ -5,6 +5,7 @@ from sklearn.model_selection import train_test_split
 from aeon.classification.convolution_based import RocketClassifier
 from aeon.classification.deep_learning import HInceptionTimeClassifier
 
+print("Aeon version:", aeon.__version__)
 
 def load_folder(folder_path, label):
     X_list = []
