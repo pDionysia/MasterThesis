@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from aeon.classification.convolution_based import RocketClassifier
-from aeon.classification.deep_learning import HInceptionTimeClassifier
+from aeon.classification.deep_learning import InceptionTimeClassifier
 
 
 def load_folder(folder_path, label):
@@ -68,7 +68,7 @@ print("ROCKET Accuracy:", clf.score(X_test, y_test))
 
 # run H-Inception time
 # H-InceptionTime model
-clf = HInceptionTimeClassifier(
+clf = InceptionTimeClassifier(
     n_epochs=50,           # start small, increase to 150–300 for final runs
     batch_size=32,
     random_state=42,
