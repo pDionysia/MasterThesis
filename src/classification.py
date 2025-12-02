@@ -25,11 +25,11 @@ def load_folder(folder_path, label):
 
 
 # Load each class
-Xclear, yclear = load_folder("data/Si_wafer_clear_SRRs", label=0)
-Xeth, yeth = load_folder("data/Si_wafer_with_ethanol", label=1)
-X10, y10 = load_folder("data/SRRs_with_10ppb_Acetamiprid", label=2)
-X100, y100 = load_folder("data/SRRs_with_100ppb_Acetamiprid", label=3)
-X1000, y1000 = load_folder("data/SRRs_with_1000ppb_Acetamiprid", label=4)
+Xclear, yclear = load_folder("../data/Si_wafer_clear_SRRs", label=0)
+Xeth, yeth = load_folder("../data/Si_wafer_with_ethanol", label=1)
+X10, y10 = load_folder("../data/SRRs_with_10ppb_Acetamiprid", label=2)
+X100, y100 = load_folder("../data/SRRs_with_100ppb_Acetamiprid", label=3)
+X1000, y1000 = load_folder("../data/SRRs_with_1000ppb_Acetamiprid", label=4)
 
 # Combine them
 X = np.array(X10 + X100 + X1000 + Xeth + Xclear, dtype=object)
